@@ -1,4 +1,4 @@
-name: Build Test APK
+name: Build Flutter APK
 
 on:
   push:
@@ -10,30 +10,43 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout Code
-        uses: actions/checkout@v4
+    - name: Checkout repository code
+      uses: actions/checkout@v3
 
-      - name: Setup Java JDK
-        uses: actions/setup-java@v4
-        with:
-          distribution: 'zulu'
-          java-version: '17'
+    - name: Set up Java JDK
+      uses: actions/setup-java@v3
+      with:
+        distribution: 'zulu'
+        java-version: '17'
 
-      - name: Setup Flutter SDK
-        uses: subosito/flutter-action@v2
-        with:
-          flutter-version: '3.x'
-          channel: 'stable'
+    - name: Set up Flutter SDK
+      uses: subosito/flutter-action@v2
+      with:
+        channel: 'stable'
 
-      - name: Install Dependencies
-        run: flutter pub get
+    - name: Bootstrap Full Flutter Project
+      run: |
+        # Back up existing files
+        mkdir -p temp_backup
+        cp pubspec.yaml temp_backup/
+        cp -r lib temp_backup/
+        
+        # Re-create full Flutter project structure
+        flutter create --org com.example chess_habit_tracker .
+        
+        # Restore our custom code and dependencies
+        cp temp_backup/pubspec.yaml .
+        cp -r temp_backup/lib/* lib/
 
-      - name: Build APK
-        run: flutter build apk --release
+    - name: Install Dependencies
+      run: flutter pub get
 
-      - name: Upload APK Artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: ChessHabitTracker-APK
-          path: build/app/outputs/flutter-apk/app-release.apk
-          
+    - name: Build Release APK
+      run: flutter build apk --release
+
+    - name: Upload APK Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: ChessHabitTracker-APK
+        path: build/app/outputs/flutter-apk/app-release.apk
+        
