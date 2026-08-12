@@ -26,15 +26,10 @@ jobs:
 
     - name: Bootstrap Full Flutter Project
       run: |
-        # Back up existing files
         mkdir -p temp_backup
         cp pubspec.yaml temp_backup/
         cp -r lib temp_backup/
-        
-        # Re-create full Flutter project structure
-        flutter create --org com.example chess_habit_tracker .
-        
-        # Restore our custom code and dependencies
+        flutter create . --force
         cp temp_backup/pubspec.yaml .
         cp -r temp_backup/lib/* lib/
 
