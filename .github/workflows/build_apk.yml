@@ -29,7 +29,7 @@ jobs:
         mkdir -p temp_backup
         cp pubspec.yaml temp_backup/
         cp -r lib temp_backup/
-        flutter create . --force
+        flutter create . --overwrite
         cp temp_backup/pubspec.yaml .
         cp -r temp_backup/lib/* lib/
 
